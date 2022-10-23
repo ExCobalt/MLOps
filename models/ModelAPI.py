@@ -1,39 +1,34 @@
 
-from model import Model
+from models.BaseModel import Model, MODEL_TYPES
 from flask_restx import Namespace, Resource, fields
 
 api = Namespace('Models', description='Expiration models')
 
-model = api.model('Model', {
-    'id': fields.String(required=True, description='Model identifier'),
+model_type = api.model('Model', {
+    'id': fields.String(required=True, description='Model type identifier'),
     'name': fields.String(required=True, description='Model name'),
 })
 
-MODELS = [
-    {'id': 1, 'name': 'Logit'},
-    {'id': 2, 'name': 'Kaplan-Meier'},
-    {'id': 3, 'name': 'Cox'},
-]
+model = Model()
 
-
-@api.route('/models/list')
-class AvaluableModels(Resource):
-    @api.doc('models_list')
-    @api.marshal_list_with(model)
+@api.route('/model/types')
+class AvaluableModelTypes(Resource):
+    @api.doc('model_types')
+    @api.marshal_list_with(model_type)
     def get(self):
-        '''List of all avaluable models'''
-        return MODELS
+        '''List of all avaluable model types'''
+        return MODEL_TYPES
 
 
-@api.route('/models/<id>')
-@api.param('id', 'Model identifier')
-@api.response(404, 'Model not found')
-class ModelName(Resource):
-    @api.doc('get_model')
-    @api.marshal_with(model)
+@api.route('/model/<id>')
+@api.param('id', 'Model type identifier')
+@api.response(404, 'Model type not found')
+class ModelType(Resource):
+    @api.doc('get_model_name')
+    @api.marshal_with(model_type)
     def get(self, id):
-        '''Get model by its identifier'''
-        for model in MODELS:
+        '''Get model name by its identifier'''
+        for model in MODEL_TYPES:
             if model['id'] == id:
                 return model
         api.abort(404)
@@ -49,5 +44,4 @@ class ModelName(Resource):
 #             return {'Result': f'Set model to {model.model}'}, 201
 #         else:
 #             return {'Result': f'Model {model.model} not found in avaluable models'}, 404
-
 

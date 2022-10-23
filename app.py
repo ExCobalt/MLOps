@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restx import Api
 
-from models_api import api as models
+from models.ModelAPI import api as models_api
 
 
 api = Api(
@@ -10,7 +10,7 @@ api = Api(
     description='Choose, fit and predict expiration models',
 )
 
-api.add_namespace(models, path='/models')
+api.add_namespace(models_api, path='/models')
 
 app = Flask(__name__)
 api.init_app(app)

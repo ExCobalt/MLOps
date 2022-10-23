@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from CoxModel import CoxModelFitter
+from models.CoxModel import CoxModelFitter
 from lifelines import KaplanMeierFitter
 from statsmodels.discrete.discrete_model import Logit
 
@@ -22,7 +22,7 @@ class Model(object):
     
     def get_data(self):
         
-        data = pd.read_csv('survival_test_data.csv', sep=';', decimal=',')
+        data = pd.read_csv('support/survival_test_data.csv', sep=';', decimal=',')
         
         data['dtAgrmntOpen'] = pd.to_datetime(data['dtAgrmntOpen']) + pd.offsets.MonthEnd(0)
         data['dtAgrmntClose'] = pd.to_datetime(data['dtAgrmntClose']) + pd.offsets.MonthEnd(0)
@@ -43,12 +43,12 @@ class Model(object):
         return f'Model type changed to {MODEL_TYPES[type_id]}'
     
     
-    def fit(self, model):
-        if model == 'Logit':
+    def fit(self):
+        if self.model_type == 'Logit':
             pass
-        elif model == 'Kaplan-Meier':
+        elif self.model_type == 'Kaplan-Meier':
             pass
-        elif model == 'Cox':
+        elif self.model_type == 'Cox':
             pass
         else:
             return None
