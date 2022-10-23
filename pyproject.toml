@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "mlops-restapi"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "mlops_restapi"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+flask = "2.1.2"
+flask-restx = "^0.5.1"
+werkzeug = "2.1.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
