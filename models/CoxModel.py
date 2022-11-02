@@ -53,23 +53,24 @@ class CoxModelFitter(CoxTimeVaryingFitter):
         for t in unique_death_times:
             id_at_risk = (t > start.values) & (t <= stop.values)
             
-            hazards_at_t = hazards[id_at_risk]
-            
             events_at_t = events.values[id_at_risk]
-            stops_at_t = stop.values[id_at_risk]
-            deaths_at_t = events.values[id_at_risk] & (stops_at_t == t)
             weights_at_t = weights.values[id_at_risk]
-            
             events_at_t_sum = (weights_at_t.squeeze() * events_at_t).sum()
-            # deaths_at_t_sum = (weights_at_t.squeeze() * deaths_at_t).sum()
             
+            hazards_at_t = hazards[id_at_risk]
             hazards_at_t_sum = np.sum(hazards_at_t)
+            hazards_at_event_at_t = hazards_at_t[events_at_t]
             
             # начальное значение
             init_val = np.exp(- events_at_t_sum / hazards_at_t_sum)
-            # init_val = np.exp(- deaths_at_t_sum / hazards_at_t_sum)
             
-            hazards_at_event_at_t = hazards_at_t[events_at_t]
+            """ 
+            # Проблемы со сходимостью, возможно ошибка. Проверить формулу
+            stops_at_t = stop.values[id_at_risk]
+            deaths_at_t = events.values[id_at_risk] & (stops_at_t == t)
+            deaths_at_t_sum = (weights_at_t.squeeze() * deaths_at_t).sum()
+            init_val = np.exp(- deaths_at_t_sum / hazards_at_t_sum) 
+            """
             
             # базовая выживаемость - решение данного уравнения по 'с' [где g(x)=exp(Xb)] :
             # sum[по выбывшим](g(x) / (1 - c^g(x))) = sum[по всем](g(x))
