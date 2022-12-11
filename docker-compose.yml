@@ -1,0 +1,17 @@
+version: '1.0'
+services:
+  db:
+    image: postgres:15.1
+    network-mode: host
+    command: postgres -c logging_collector=on -c log_destination=stderr -c log_directory=/logs
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:v45wbge8rl}
+    volumes:
+      - ./logs:/logs
+  
+  models:
+    image: registry.gitlab.com/excobalt/mlops:latest
+    network-mode: host
+    command: python ./main.py
+    depends_on:
+      - db

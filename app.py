@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restx import Api
 
-from models.ModelAPI import api as models_api
+from models.models_api import api as models_api
 
 
 api = Api(

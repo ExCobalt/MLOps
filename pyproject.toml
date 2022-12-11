@@ -11,6 +11,7 @@ python = "^3.9"
 flask = "2.1.2"
 flask-restx = "^0.5.1"
 werkzeug = "2.1.2"
+sqlalchemy = "^1.4.45"
 
 
 [build-system]
