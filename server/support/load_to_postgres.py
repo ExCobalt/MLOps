@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
 
-engine = create_engine('postgresql://postgres:v45wbge8rl@localhost:5432/postgres')
+engine = create_engine('postgresql://postgres:password@localhost:5432/postgres')
 
 data = pd.read_csv('./support/survival_test_data.csv', sep=';', decimal=',')
 

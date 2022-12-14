@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.9-slim
 
 ARG MLOPS_ENV
 
@@ -19,16 +19,19 @@ ENV MLOPS_ENV=${MLOPS_ENV} \
   POETRY_CACHE_DIR='/var/cache/pypoetry' \
   POETRY_HOME='/usr/local'
 
+EXPOSE 5000
 
 RUN pip install "poetry==$POETRY_VERSION"
 
 # Copy only requirements to cache them in docker layer
-WORKDIR /mlops
-COPY poetry.lock pyproject.toml /mlops/
+WORKDIR /server/
+COPY poetry.lock pyproject.toml /server/
 
 # Project initialization:
 RUN poetry config virtualenvs.create false \
   && poetry install --no-interaction --no-ansi
 
 # Creating folders, and files for a project:
-COPY . /mlops
+COPY . /server/
+
+

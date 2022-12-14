@@ -28,6 +28,7 @@ class Model(object):
         self.models_list = MODELS_LIST
         self.clear_model()
         self.set_model_type('Logit')
+        self.update_storage()
         self.sql_conn = create_engine('postgresql://postgres:v45wbge8rl@localhost:5432/postgres')
         self.get_data(table='survival')
     
@@ -134,29 +135,46 @@ class Model(object):
         except Exception as e:
             return e
         
-    def list_all_fitted(self):
-        path = Path(f'{CHECKPOINT_DIR}/{self.model_type}/').glob('**/*')
-        files = [x for x in path if x.is_file()]
-        return files
+        
+    def update_storage(self):
+        path = Path(f'{CHECKPOINT_DIR}/storage/').glob('**/*')
+        fitted = {i: [] for i in self.models_list}
+        for x in path:
+            if x.is_file():
+                fitted[x.parent.name].append(x.name)
+        self.fitted = fitted
 
  
     def save(self, path=None):
         if path is None:
-            path = f'{CHECKPOINT_DIR}/{self.model_type}/{self.model_uid}'
+            path = f'{CHECKPOINT_DIR}/storage/{self.model_type}/{self.model_uid}'
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         with open(path, 'wb') as f:
             pickle.dump(self.model, f)
+        self.update_storage()
         return f'Saved model to {path}'
     
     
-    def restore(self, path=None, model_uid=None):
+    def restore(self, path=None, model_type=None, model_uid=None):
         if path is not None:
             with open(path, 'rb') as f:
                 self.model = pickle.load(f)
-        elif model_uid is not None:
-            path = f'{CHECKPOINT_DIR}/{self.model_type}/{model_uid}'
-            with open(path, 'rb') as f:
-                self.model = pickle.load(f)
-        else:
-            return 'Path or model uid not provided'
+            return f'Load model from {path}'
+        
+        self.update_storage()
+        if model_type is None:
+            # If model type not provided use current
+            model_type = self.model_type
+        if model_uid is None:
+            # If model uid not provided use last model
+            model_uid = sorted(self.fitted[model_type])[-1]
+        
+        assert model_type in self.models_list, f'Model type {model_type} does not exist'
+        assert model_uid in self.fitted[model_type], f'Model {model_uid} does not exist'
+    
+        path = f'{CHECKPOINT_DIR}/storage/{model_type}/{model_uid}'
+        with open(path, 'rb') as f:
+            self.model = pickle.load(f)
+        self.model_type = model_type
+
         return f'Load model from {path}'

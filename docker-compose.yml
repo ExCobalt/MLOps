@@ -2,16 +2,23 @@ version: '1.0'
 services:
   db:
     image: postgres:15.1
-    network-mode: host
+    network_mode: host
     command: postgres -c logging_collector=on -c log_destination=stderr -c log_directory=/logs
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:v45wbge8rl}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - ./logs:/logs
-  
-  models:
-    image: registry.gitlab.com/excobalt/mlops:latest
-    network-mode: host
-    command: python ./main.py
+
+  app:
+    build: server/
+    network_mode: host
+    command: bash -c "python support/load_to_postgres.py && python main.py"
+    ports:
+      - "127.0.0.1:5000:5000"
     depends_on:
       - db
+
+  # image: registry.gitlab.com/excobalt/mlops:latest
