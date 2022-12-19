@@ -3,10 +3,10 @@
 from sqlalchemy import create_engine
 
 def test_db_connection():
-    engine = create_engine('postgresql://postgres:password@localhost:5432/postgres')
+    engine = create_engine('postgresql://postgres:password@dev:5432/postgres')
     
     with engine.begin() as conn:
         result = conn.execute('SELECT schema_name FROM information_schema.schemata').all()
         result = [item for subresult in result for item in subresult ]
-        
+    
     assert 'public' in result

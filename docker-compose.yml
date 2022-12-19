@@ -1,24 +1,51 @@
 version: '1.0'
+
+networks:
+  dev:
+    driver: bridge
+
 services:
-  db:
+  postgres:
+    container_name: postgres
     image: postgres:15.1
-    network_mode: host
+    networks:
+      - dev
     command: postgres -c logging_collector=on -c log_destination=stderr -c log_directory=/logs
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
-      - "127.0.0.1:5432:5432"
+      - "5432:5432"
     volumes:
-      - ./logs:/logs
+      - ./.logs/postgres:/logs
 
-  app:
+
+  webapp:
+    container_name: webapp
     build: server/
-    network_mode: host
+    # restart: unless-stopped
+    networks:
+      - dev
     command: bash -c "python support/load_to_postgres.py && python main.py"
+    # command: gunicorn --bind 0.0.0.0:5000 main:app
     ports:
-      - "127.0.0.1:5000:5000"
+      - "5000:5000"
     depends_on:
-      - db
+      - postgres
+
+
+  nginx:
+      container_name: nginx
+      image: nginx:latest
+      # restart: unless-stopped
+      networks:
+        - dev
+      ports:
+        - "8080:80"
+      volumes:
+        - ./server/conf:/etc/nginx/conf.d
+        - ./.logs/nginx:/var/log/nginx
+      depends_on:
+        - webapp
 
   # image: registry.gitlab.com/excobalt/mlops:latest

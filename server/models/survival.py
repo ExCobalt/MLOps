@@ -29,7 +29,7 @@ class Model(object):
         self.clear_model()
         self.set_model_type('Logit')
         self.update_storage()
-        self.sql_conn = create_engine('postgresql://postgres:v45wbge8rl@localhost:5432/postgres')
+        self.sql_conn = create_engine('postgresql://postgres:password@dev:5432/postgres')
         self.get_data(table='survival')
     
     
